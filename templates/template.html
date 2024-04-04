@@ -20,9 +20,13 @@
 
     <style>
       .card-img-top {
-        width: 100%; /* Asegura que la imagen cubra el ancho de la tarjeta */
-        height: 15vw; /* Ajusta la altura de la imagen */
-        object-fit: cover; /* Asegura que la imagen cubra el espacio sin perder su proporción */
+        width: 100%;
+        height: 15vw;
+        object-fit: cover;
+      }
+
+      .image-modal-open {
+        cursor: pointer;
       }
 
       .footer {
@@ -33,25 +37,76 @@
       }
 
       body {
-        padding-bottom: 60px; /* Ajuste en función de la altura de tu pie de página */
+        padding-bottom: 60px;
       }
 
       .centered-content {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: calc(100vh - 60px); /* Resta la altura del pie de página */
+        min-height: calc(100vh - 120px);
+        padding-top: 80px;
+      }
+
+      .header h1,
+      .header p {
+        color: #ffffff; /* Cambia el color del texto a blanco */
+      }
+
+      .modal-body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%; /* Ajuste según sea necesario */
+      }
+
+      @media (max-width: 768px) {
+        .centered-content {
+          padding-top: 150px; /* Ajustar según la altura real del header en pantallas pequeñas */
+        }
       }
     </style>
   </head>
   <body>
-    <div class="centered-content">
-      <section id="galeria" class="container">
-        <div class="text-center">
-          <h1>{{.Title}}</h1>
-          <p>Host: {{.Hostname}}, Temática: {{.Theme}}.</p>
+    <!-- Header fijo -->
+    <div class="header bg-dark py-2 fixed-top">
+      <div class="container">
+        <div
+          class="d-flex flex-wrap justify-content-between align-items-center"
+        >
+          <h1 class="text-white flex-fill">{{.Title}}</h1>
+          <div class="text-white text-end flex-fill">
+            <p class="mb-0">Host: {{.Hostname}}</p>
+            <p class="mb-0">Temática: {{.Theme}}</p>
+          </div>
         </div>
+      </div>
+    </div>
 
+    <div class="centered-content">
+      <!-- Modal para Mostrar Imagen -->
+      <div
+        class="modal fade"
+        id="imagenModal"
+        tabindex="-1"
+        aria-labelledby="modalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+              <img
+                src=""
+                class="img-fluid"
+                id="imagenDetalle"
+                alt="Imagen Ampliada"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="galeria" class="container py-5">
         <!-- Grid de Imágenes -->
         <div class="row">
           {{range .Images}}
@@ -59,9 +114,14 @@
             <div class="card">
               <img
                 src="{{.}}"
-                class="card-img-top"
-                alt="Ciudades del Quindío"
+                class="card-img-top image-modal-open"
+                alt="Imagen"
+                data-bs-toggle="modal"
+                data-bs-target="#imagenModal"
               />
+              <div class="card-body">
+                <h5 class="card-title">{{.}}</h5>
+              </div>
             </div>
           </div>
           {{end}}
@@ -73,6 +133,23 @@
     <div class="footer text-center p-3">
       {{.CourseName}} - {{.Participants}} - {{.Date}}
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Encuentra todas las imágenes que abren el modal
+        var images = document.querySelectorAll(".image-modal-open");
+
+        // Agrega un evento click a cada imagen
+        images.forEach(function (image) {
+          image.addEventListener("click", function () {
+            // Cambia la fuente de la imagen del modal al src de la imagen clickeada
+            var src = this.getAttribute("src");
+            var modalImage = document.getElementById("imagenDetalle");
+            modalImage.src = src;
+          });
+        });
+      });
+    </script>
 
     <!-- Bootstrap Bundle with Popper -->
     <script
